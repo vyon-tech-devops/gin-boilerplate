@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -37,6 +38,8 @@ type Token struct {
 
 //AuthModel ...
 type AuthModel struct{}
+
+var ctx = context.Background()
 
 //CreateToken ...
 func (m AuthModel) CreateToken(userID int64) (*TokenDetails, error) {
@@ -80,11 +83,11 @@ func (m AuthModel) CreateAuth(userid int64, td *TokenDetails) error {
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
 
-	errAccess := db.GetRedis().Set(td.AccessUUID, strconv.Itoa(int(userid)), at.Sub(now)).Err()
+	errAccess := db.GetRedis().Set(ctx, td.AccessUUID, strconv.Itoa(int(userid)), at.Sub(now)).Err()
 	if errAccess != nil {
 		return errAccess
 	}
-	errRefresh := db.GetRedis().Set(td.RefreshUUID, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
+	errRefresh := db.GetRedis().Set(ctx, td.RefreshUUID, strconv.Itoa(int(userid)), rt.Sub(now)).Err()
 	if errRefresh != nil {
 		return errRefresh
 	}
@@ -156,7 +159,7 @@ func (m AuthModel) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error)
 
 //FetchAuth ...
 func (m AuthModel) FetchAuth(authD *AccessDetails) (int64, error) {
-	userid, err := db.GetRedis().Get(authD.AccessUUID).Result()
+	userid, err := db.GetRedis().Get(ctx, authD.AccessUUID).Result()
 	if err != nil {
 		return 0, err
 	}
@@ -166,7 +169,7 @@ func (m AuthModel) FetchAuth(authD *AccessDetails) (int64, error) {
 
 //DeleteAuth ...
 func (m AuthModel) DeleteAuth(givenUUID string) (int64, error) {
-	deleted, err := db.GetRedis().Del(givenUUID).Result()
+	deleted, err := db.GetRedis().Del(ctx, givenUUID).Result()
 	if err != nil {
 		return 0, err
 	}
