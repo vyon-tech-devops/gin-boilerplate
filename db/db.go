@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/go-gorp/gorp"
-	_redis "github.com/go-redis/redis/v7"
+	_redis "github.com/go-redis/redis/v8"
 	_ "github.com/lib/pq" //import postgres
 )
 
