@@ -1,6 +1,6 @@
 module github.com/Massad/gin-boilerplate
 
-go 1.14
+go 1.17
 
 require (
 	github.com/gin-contrib/gzip v0.0.1

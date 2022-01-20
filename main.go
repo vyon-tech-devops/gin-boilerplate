@@ -113,10 +113,6 @@ func main() {
 		v1.DELETE("/article/:id", TokenAuthMiddleware(), article.Delete)
 	}
 
-	r.LoadHTMLGlob("./public/html/*")
-
-	r.Static("/public", "./public")
-
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"ginBoilerplateVersion": "v0.03",
